@@ -1,0 +1,2 @@
+# 告诉 GN 默认工具链在哪里
+set_default_toolchain("//toolchain:default")

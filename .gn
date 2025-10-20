@@ -1,0 +1,2 @@
+# 告诉 GN 哪个文件是构建配置文件
+buildconfig = "//build/config/BUILDCONFIG.gn"

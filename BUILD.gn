@@ -1,0 +1,19 @@
+# =====================================
+# BUILD.gn
+# =====================================
+
+# 定义一个 GN 目标：执行 cargo build
+action("build_rust") {
+  script = "build_rust.py"
+
+  args = [
+    rebase_path("$target_out_dir/rust", root_build_dir),
+  ]
+
+  # 告诉 GN 输出文件位于构建目录中
+  outputs = [ "$target_out_dir/rust/release/rcalc.exe" ]
+}
+
+group("app") {
+  deps = [ ":build_rust" ]
+}

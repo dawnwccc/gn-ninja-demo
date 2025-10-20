@@ -1,0 +1,13 @@
+[package]
+name = "rcalc"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+
+
+[build-dependencies]
+# 使用 cc crate 在构建时自动编译 csrc/*.c 文件
+cc = "1.0"
+bindgen = "0.72.1"

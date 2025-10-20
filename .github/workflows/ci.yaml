@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [created]
+
+jobs:
+  rust:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build & Test
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
+          cargo build --release
+
+  gn-ninja:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GN and Ninja
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            choco install ninja -y
+          else
+            sudo apt-get update
+            sudo apt-get install -y ninja-build
+          fi
+
+      - name: Generate & Build
+        run: |
+          gn gen out/Release
+          ninja -C out/Release
+
+      - name: Upload Artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rcalc-${{ matrix.os }}
+          path: out/Release/obj/rust/release/rcalc*
