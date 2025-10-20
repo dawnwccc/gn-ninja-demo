@@ -14,6 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,14 +46,17 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install GN and Ninja
         run: |
-          if [ "${{ runner.os }}" == "Windows" ]; then
+          if [ "${{ runner.os }}" = "Windows" ]; then
             choco install ninja -y
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            brew install ninja
           else
             sudo apt-get update
             sudo apt-get install -y ninja-build
